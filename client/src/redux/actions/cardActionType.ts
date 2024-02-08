@@ -1,0 +1,45 @@
+import { Card } from "../../types/CardType";
+
+export const SET_CARDS = "SET_CARDS";
+export const LOADING = "LOADING";
+export const SET_LIMIT = "SET_LIMIT";
+export const SET_CATEGORY = "SET_CATEGORY";
+export const SET_COUNT = "SET_COUNT";
+export const RESET_CARD_STATE = "RESET_CARD_STATE";
+
+export type SetCards = {
+  type: typeof SET_CARDS;
+  payload: Card[];
+};
+
+export type Loading = {
+  type: typeof LOADING;
+  payload: boolean;
+};
+
+export type SetLimit = {
+  type: typeof SET_LIMIT;
+  payload: number;
+};
+
+export type SetCategory = {
+  type: typeof SET_CATEGORY;
+  payload: object | undefined;
+};
+
+export type SetCount = {
+  type: typeof SET_COUNT;
+  payload: number;
+};
+
+export type ResetCardState = {
+  type: typeof RESET_CARD_STATE;
+};
+
+export type CardAction =
+  | SetCards
+  | SetLimit
+  | SetCategory
+  | SetCount
+  | Loading
+  | ResetCardState;
