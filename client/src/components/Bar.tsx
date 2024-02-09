@@ -7,13 +7,13 @@ import {
   Typography,
 } from "@mui/material";
 import { RootState, useAppDispatch, useAppSelector } from "../redux/store";
-import { useEffect } from "react";
-import { clearUser, getUser } from "../redux/reducers/userReducer";
+import { clearUser } from "../redux/reducers/userReducer";
 import HistoryEduSharpIcon from "@mui/icons-material/HistoryEduSharp";
 import { AdvancedImage } from "@cloudinary/react";
 import { fill } from "@cloudinary/url-gen/actions/resize";
 import { cloudinaryFnc } from "../utils/cloudinaryFnc";
 import { useNavigate } from "react-router-dom";
+import { button_box } from "../styles/bar";
 
 export default function Bar() {
   const user = useAppSelector((state: RootState) => state.userReducer.user);
@@ -24,12 +24,6 @@ export default function Bar() {
     dispatch(clearUser());
   };
   const cld = cloudinaryFnc();
-
-  useEffect(() => {
-    if (!user) {
-      dispatch(getUser());
-    }
-  },[dispatch, user]);
   return (
     <AppBar position="fixed">
       <Toolbar>
@@ -39,6 +33,7 @@ export default function Bar() {
           color="inherit"
           aria-label="menu"
           sx={{ mr: 2 }}
+          onClick={() => navigate('/dashboard')}
         >
           <HistoryEduSharpIcon />
         </IconButton>
@@ -47,12 +42,7 @@ export default function Bar() {
         </Typography>
         {user ? (
           <Box
-            sx={{
-              gap: 1,
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
+            sx={button_box}
           >
             <Typography onClick={() => navigate(`/home/${user.userName}`)}>Welcome back, {user.userName}</Typography>
             <Box>
@@ -62,15 +52,18 @@ export default function Bar() {
                   .resize(fill().width(50).height(50))}
               />
             </Box>
-            <Button onClick={handleLogout} variant="outlined">
+            <Button onClick={handleLogout} variant="contained" color="secondary">
               LOGOUT
             </Button>
-            <Button onClick={() => navigate("/cardForm")} variant="outlined">
+            <Button onClick={() => navigate("/cardForm")} variant="contained" color="secondary">
               Add card
             </Button>
           </Box>
         ) : (
-          <Button color="inherit">Login</Button>
+          <Box sx={button_box}>
+            <Button variant="contained" color="secondary" onClick={() => navigate("/login")}>Login</Button>
+            <Button variant="contained" color="secondary" onClick={() => navigate("/register")}>Register</Button>
+          </Box>
         )}
       </Toolbar>
     </AppBar>

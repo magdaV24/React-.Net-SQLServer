@@ -4,7 +4,6 @@ import {
   TableHead,
   TableRow,
   TableCell,
-  Container,
   TextField,
   Box,
   CircularProgress,
@@ -23,12 +22,18 @@ import {
   useEditPublicMutation,
 } from "../redux/api/appApi";
 import { useAppDispatch } from "../redux/store";
+import {
+  button_box,
+  editing_box,
+  table_container,
+} from "../styles/editCardForm";
 
 interface Props {
   card: Card;
 }
 
 export default function EditCardForm({ card }: Props) {
+  const dispatch = useAppDispatch();
   const { control, handleSubmit, getValues, setValue } = useForm();
   const [editing, setEditing] = useState([
     false,
@@ -67,6 +72,7 @@ export default function EditCardForm({ card }: Props) {
   const submitEditField = (field: string) => {
     const input = { id: card.id, field: field, value: getValues(`${field}`) };
     editField(input);
+    dispatch(appApi.util.resetApiState())
   };
   const submitEditPublic = (input: boolean) => {
     const edit = { id: card.id, value: getValues("Public") };
@@ -76,26 +82,15 @@ export default function EditCardForm({ card }: Props) {
       edit.value = 1;
     }
     editPublic(edit);
+    dispatch(appApi.util.resetApiState())
   };
 
-  const dispatch = useAppDispatch()
   const submitDelete = () => {
     deleteCard(card.id);
-    dispatch(appApi.util.resetApiState())
-  }
+    dispatch(appApi.util.resetApiState());
+  };
   return (
-    <TableContainer
-      sx={{
-        display: "flex",
-        minHeight: "60vh",
-        height: "fit-content",
-        width: "100%",
-        alignItems: "center",
-        justifyContent: "space-between",
-        flexDirection: "column",
-        padding: 2,
-      }}
-    >
+    <TableContainer sx={table_container}>
       <Table>
         <TableHead>
           <TableRow sx={{ align: "left", backgroundColor: "secondary.dark" }}>
@@ -107,14 +102,7 @@ export default function EditCardForm({ card }: Props) {
               onDoubleClick={() => editingState(0)}
             >
               {editing[0] ? (
-                <Container
-                  sx={{
-                    display: "flex",
-                    gap: 1,
-                    alignItems: "center",
-                    justifyContent: "flex-start",
-                  }}
-                >
+                <Box sx={editing_box}>
                   <Controller
                     control={control}
                     name="Category"
@@ -142,7 +130,7 @@ export default function EditCardForm({ card }: Props) {
                       <PublishSharpIcon />
                     </Button>
                   )}
-                </Container>
+                </Box>
               ) : (
                 card?.category
               )}
@@ -155,14 +143,7 @@ export default function EditCardForm({ card }: Props) {
               onDoubleClick={() => editingState(1)}
             >
               {editing[1] ? (
-                <Container
-                  sx={{
-                    display: "flex",
-                    gap: 1,
-                    alignItems: "center",
-                    justifyContent: "flex-start",
-                  }}
-                >
+                <Box sx={editing_box}>
                   <Controller
                     control={control}
                     name="Question"
@@ -188,7 +169,7 @@ export default function EditCardForm({ card }: Props) {
                       <PublishSharpIcon />
                     </Button>
                   )}
-                </Container>
+                </Box>
               ) : (
                 card?.question
               )}
@@ -201,14 +182,7 @@ export default function EditCardForm({ card }: Props) {
               onDoubleClick={() => editingState(2)}
             >
               {editing[2] ? (
-                <Container
-                  sx={{
-                    display: "flex",
-                    gap: 1,
-                    alignItems: "center",
-                    justifyContent: "flex-start",
-                  }}
-                >
+                <Box sx={editing_box}>
                   <Controller
                     control={control}
                     name="Answer"
@@ -234,7 +208,7 @@ export default function EditCardForm({ card }: Props) {
                       <PublishSharpIcon />
                     </Button>
                   )}
-                </Container>
+                </Box>
               ) : (
                 card?.answer
               )}
@@ -247,14 +221,7 @@ export default function EditCardForm({ card }: Props) {
               onDoubleClick={() => editingState(3)}
             >
               {editing[3] ? (
-                <Container
-                  sx={{
-                    display: "flex",
-                    gap: 1,
-                    alignItems: "center",
-                    justifyContent: "flex-start",
-                  }}
-                >
+                <Box sx={editing_box}>
                   <Controller
                     control={control}
                     name="WrongAnswerOne"
@@ -282,7 +249,7 @@ export default function EditCardForm({ card }: Props) {
                       <PublishSharpIcon />
                     </Button>
                   )}
-                </Container>
+                </Box>
               ) : (
                 card?.wrongAnswerOne
               )}
@@ -295,14 +262,7 @@ export default function EditCardForm({ card }: Props) {
               onDoubleClick={() => editingState(4)}
             >
               {editing[4] ? (
-                <Container
-                  sx={{
-                    display: "flex",
-                    gap: 1,
-                    alignItems: "center",
-                    justifyContent: "flex-start",
-                  }}
-                >
+                <Box sx={editing_box}>
                   <Controller
                     control={control}
                     name="WrongAnswerTwo"
@@ -332,7 +292,7 @@ export default function EditCardForm({ card }: Props) {
                       <PublishSharpIcon />
                     </Button>
                   )}
-                </Container>
+                </Box>
               ) : (
                 card?.wrongAnswerTwo
               )}
@@ -345,14 +305,7 @@ export default function EditCardForm({ card }: Props) {
               onDoubleClick={() => editingState(5)}
             >
               {editing[5] ? (
-                <Container
-                  sx={{
-                    display: "flex",
-                    gap: 1,
-                    alignItems: "center",
-                    justifyContent: "flex-start",
-                  }}
-                >
+                <Box sx={editing_box}>
                   <Controller
                     control={control}
                     name="WrongAnswerThree"
@@ -382,7 +335,7 @@ export default function EditCardForm({ card }: Props) {
                       <PublishSharpIcon />
                     </Button>
                   )}
-                </Container>
+                </Box>
               ) : (
                 card?.wrongAnswerThree
               )}
@@ -395,7 +348,7 @@ export default function EditCardForm({ card }: Props) {
               onDoubleClick={() => editingState(6)}
             >
               {editing[6] ? (
-                <Container>
+                <Box sx={editing_box}>
                   <Controller
                     name="Public"
                     control={control}
@@ -427,29 +380,36 @@ export default function EditCardForm({ card }: Props) {
                       <PublishSharpIcon />
                     </Button>
                   )}
-                </Container>
+                </Box>
               ) : (
                 displayPublic(card?.public)
               )}
             </TableCell>
           </TableRow>
-          <TableRow sx={{ align: "left", backgroundColor: "secondary.dark" }}>
-            {deleteLoading ? (
-              <Button>
-                <CircularProgress />
-              </Button>
-            ) : (
-              <Button
-                color="error"
-                variant="contained"
-                onClick={submitDelete}
-              >
-                Delete card
-              </Button>
-            )}
-          </TableRow>
         </TableHead>
       </Table>
+      <Box sx={button_box}>
+        {deleteLoading ? (
+          <Button
+            color="error"
+            variant="contained"
+            size="large"
+            sx={{ width: "100%" }}
+          >
+            <CircularProgress />
+          </Button>
+        ) : (
+          <Button
+            color="error"
+            variant="contained"
+            size="large"
+            sx={{ width: "100%" }}
+            onClick={submitDelete}
+          >
+            Delete card
+          </Button>
+        )}
+      </Box>
     </TableContainer>
   );
 }

@@ -68,15 +68,11 @@ namespace server.Controllers
         [HttpGet("fetchCardsPublicCategories")]
         public async Task<ActionResult<IEnumerable<string>>> GetPublicCategories()
         {
-            if (!User.HasClaim(c => c.Type == "isLoggedIn" && c.Value == "true"))
-            {
-                return StatusCode(StatusCodes.Status401Unauthorized, "User is not authenticated.");
-            }
             try {
-
                 var categories = await _context.Cards
                     .Where(c => c.Public == 1)
                     .Select(c => c.Category)
+                    .Distinct()
                     .ToListAsync();
 
                 return Ok(categories);
@@ -92,7 +88,7 @@ namespace server.Controllers
         /// <summary>
         /// Searches for all the public cards and the current user's cards.It creates a list of unique categories by 
         /// combining the categories of  all the selected cards, then iterates over the categories and for each,
-        /// searches for how many cards of that category  exist
+        /// searches for how many cards of that category  exist.
         /// </summary>
         /// <param name="id">The current user's id</param>
         /// <returns>A list of the selecetd categories and the corresponding number of cards.</returns>
@@ -112,7 +108,7 @@ namespace server.Controllers
                 var userCards = await _context.Cards.Where(c => c.UserId == id).ToListAsync();
 
                 var categories = cards.Select(c => c.Category)
-                                      .Union(userCards.Select(c => c.Category), StringComparer.OrdinalIgnoreCase)
+                                      .Union(userCards.Select(c => c.Category))
                                       .Distinct()
                                       .ToList();
 
@@ -120,7 +116,7 @@ namespace server.Controllers
 
                 foreach (var category in categories)
                 {
-                    var count = await _context.Cards.Where(c => c.Category.Equals(category, StringComparison.OrdinalIgnoreCase)).CountAsync();
+                    var count = await _context.Cards.Where(c => c.Category==category).CountAsync();
                     result.Add(new { Category = category, Count = count });
                 }
 
@@ -132,8 +128,6 @@ namespace server.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while fetching game categories. Please try again later.");
             }
         }
-
-
 
         /// <summary>
         /// Searches the database for the cards that correspond to the provided category. 
@@ -174,7 +168,6 @@ namespace server.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while fetching cards. Please try again later.");
             }
         }
-
 
         /// <summary>
         /// Deletes a card by its ID.
@@ -248,7 +241,7 @@ namespace server.Controllers
                 var convertedValue = Convert.ChangeType(editFieldDTO.Value, property.PropertyType);
                 property.SetValue(card, convertedValue);
                 await _context.SaveChangesAsync();
-                return Ok(card);
+                return Ok(convertedValue);
             }
             catch (Exception ex)
             {

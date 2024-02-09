@@ -13,11 +13,14 @@ import Game from "./game/Game";
 import { useEffect } from "react";
 import { RootState, useAppDispatch, useAppSelector } from "./redux/store";
 import { getToken, getUser } from "./redux/reducers/userReducer";
+import Backdrop from "./components/Backdrop";
+import { getTheme } from "./redux/theme/themeReducer";
 
 function App() {
   const dispatch = useAppDispatch();
   const { user, token } = useAppSelector((state: RootState) => state.userReducer)
   useEffect(() => {
+    dispatch(getTheme()) 
     if (!user) {
       dispatch(getUser());
     }
@@ -41,6 +44,7 @@ function App() {
       <ErrorAlert/>
       <SuccessAlert/>
       <ThemeButton />
+      <Backdrop />
     </CssBaseline>
   );
 }

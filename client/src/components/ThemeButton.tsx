@@ -1,8 +1,8 @@
 import { Fab } from "@mui/material";
 import PaletteOutlinedIcon from '@mui/icons-material/PaletteOutlined';
-import { DARK_THEME, DarkThemeAction, LIGHT_THEME, LightThemeAction } from "../redux/actions/themeActionType";
 import { RootState, useAppDispatch, useAppSelector } from "../redux/store";
 import { fab_style } from "../styles/app";
+import { setDarkTheme, setLightTheme } from "../redux/theme/themeReducer";
 
 export default function ThemeButton(){
 
@@ -11,9 +11,11 @@ export default function ThemeButton(){
 
     const toggleTheme = () => {
         if(currentTheme === 'light'){
-            dispatch(({type: DARK_THEME}) as DarkThemeAction)
+            dispatch(setDarkTheme())
+            localStorage.setItem("Theme", "dark")
         } else{
-            dispatch(({type: LIGHT_THEME}) as LightThemeAction)
+            dispatch(setLightTheme())
+            localStorage.setItem("Theme", "light")
         }
     }
 

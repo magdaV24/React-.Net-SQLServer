@@ -1,7 +1,7 @@
 import { SET_MESSAGE, CLEAR_MESSAGE, MessageAction } from "../actions/messageActionType";
 
 export interface MessageState {
-    message: string | null;
+    message: string | Element | null;
     openMessage: boolean;
   }
   
@@ -10,7 +10,7 @@ export interface MessageState {
     openMessage: false
   };
   
-  export function setMessage(message: string) {
+  export function setMessage(message: string | Element) {
     return {
       type: SET_MESSAGE,
       payload: message,

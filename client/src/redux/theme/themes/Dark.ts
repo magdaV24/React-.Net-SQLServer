@@ -4,26 +4,30 @@ export const DarkTheme: ThemeOptions = {
   palette: {
     mode: 'dark',
     primary: {
-      main: '#985e6d',
+      main: '#AAA1A0',
     },
     secondary: {
-      main: '#98878f',
+      main: '#8D8960',
     },
     background: {
-      default: '#121113',
-      paper: '#192231',
+      default: '#4F3750',
+      paper: '#635067',
     },
     error: {
-      main: '#7C0817',
+      main: '#cb4848',
+      contrastText: '#ffebee',
     },
     warning: {
-      main: '#efa030',
+      main: '#f39f32',
+      contrastText: '#ffebee',
     },
     info: {
-      main: '#4a99bd',
+      main: '#40c4ff',
+      contrastText: '#ffebee',
     },
     success: {
-      main: '#4a7b4c',
+      main: '#2e7d32',
+      contrastText: '#ffebee',
     },
   },
 };

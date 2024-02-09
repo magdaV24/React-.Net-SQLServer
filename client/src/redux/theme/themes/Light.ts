@@ -4,27 +4,26 @@ export const LightTheme: ThemeOptions = {
   palette: {
     mode: 'light',
     primary: {
-      main: '#5a3227',
-      dark: '#201109',
+      main: '#176d5a',
     },
     secondary: {
-      main: '#949d6a',
+      main: '#FEDE00',
     },
     background: {
-      default: '#f6ca83',
-      paper: '#9cafb7',
+      default: '#C8DF52',
+      paper: '#DBE8D8',
     },
     error: {
-      main: '#b71c1c',
+      main: '#8a1717',
     },
     warning: {
-      main: '#6d0f41',
+      main: '#bf360c',
     },
     info: {
-      main: '#01579b',
+      main: '#0f3f64',
     },
     success: {
-      main: '#004d40',
+      main: '#1b5e20',
     },
   },
 };

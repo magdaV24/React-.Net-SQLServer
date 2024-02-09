@@ -14,7 +14,6 @@ import { Controller, useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/store";
 import { useEffect } from "react";
-import { getUser } from "../redux/reducers/userReducer";
 import { useAddCardMutation } from "../redux/api/appApi";
 import AddCardSharpIcon from "@mui/icons-material/AddCardSharp";
 import { setError } from "../redux/reducers/errorReducer";
@@ -45,6 +44,7 @@ export default function CardsForm() {
 
   const onSubmit = async () => {
     const userId = user?.id;
+   try {
     const input = {
       category: getValues("category"),
       question: getValues("question"),
@@ -57,13 +57,15 @@ export default function CardsForm() {
       check: getValues("public"),
     };
     await addCard(input);
+    dispatch(setMessage("Card added successfully!"));
+    reset()
+   } catch (error) {
+    dispatch(setError(`Log in error: ${error}`));
+   }
   };
   const isNotEmpty = (value: string) => value.trim() !== "";
 
   useEffect(() => {
-    if (!user) {
-      dispatch(getUser());
-    }
     if (errors.category) {
       dispatch(setError(`Category error: ${errors.category.message}`));
     }
@@ -79,10 +81,6 @@ export default function CardsForm() {
       errors.wrongAnswerThree
     ) {
       dispatch(setError("Three incorrect answers are required!"));
-    }
-    if (isSuccess) {
-      dispatch(setMessage("Card added successfully!"));
-      reset();
     }
   }, [
     dispatch,

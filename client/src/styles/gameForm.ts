@@ -1,5 +1,5 @@
 export const game_form = {
-    height: "50vh",
+    height: "20vh",
     display: "flex",
     flexDirection: "column",
     p: 2,

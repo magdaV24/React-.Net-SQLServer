@@ -34,7 +34,7 @@ export default function SetCategory() {
             </MenuItem>
             {data &&
               data.map((item: Select) => (
-                <MenuItem key={item.category} value={item.category} onClick={() => dispatch(setCount(item.count))}>
+                <MenuItem key={Math.random()} value={item.category} onClick={() => dispatch(setCount(item.count))}>
                   {item.category}
                 </MenuItem>
               ))}

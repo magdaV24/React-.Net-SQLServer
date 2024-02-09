@@ -146,3 +146,4 @@ C:\Github\React-Entityframework-SQLServer\server\obj\Debug\net8.0\refint\server.
 C:\Github\React-Entityframework-SQLServer\server\obj\Debug\net8.0\server.pdb
 C:\Github\React-Entityframework-SQLServer\server\obj\Debug\net8.0\server.genruntimeconfig.cache
 C:\Github\React-Entityframework-SQLServer\server\obj\Debug\net8.0\ref\server.dll
+C:\Github\React-Entityframework-SQLServer\server\obj\Debug\net8.0\server.sourcelink.json

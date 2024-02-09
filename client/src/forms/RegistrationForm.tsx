@@ -4,6 +4,7 @@ import {
   CircularProgress,
   Container,
   TextField,
+  Typography,
 } from "@mui/material";
 import { Controller, useForm } from "react-hook-form";
 import { register_wrapper } from "../styles/registerForm";
@@ -19,6 +20,8 @@ import { setMessage } from "../redux/reducers/messageReducer";
 import { AxiosResponse } from "axios";
 import { PRESET } from "../utils/cloudinary";
 import { User } from "../types/UserType";
+import { useNavigate } from "react-router-dom";
+import { alert_typography } from "../styles/app";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -42,8 +45,14 @@ export default function RegistrationForm() {
   } = useForm();
 
   const submit_to_cloudinary = useCloudinary();
-  const [register, { isLoading, isSuccess }] = useRegisterMutation();
+  const [register, { isLoading }] = useRegisterMutation();
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const link = (
+    <Typography onClick={() => navigate("/dashboard")} sx={alert_typography}>
+      Account created successfully! .Click here to go to the dashboard.
+    </Typography>
+  ) as unknown as string | Element;
 
   const onSubmit = async () => {
     const temp = getValues("avatar");
@@ -58,15 +67,16 @@ export default function RegistrationForm() {
       await submit_to_cloudinary(formData).then((res) =>
         setValue("avatar", res)
       );
-     const res = await register({
+      const res = (await register({
         email: getValues("email"),
         username: getValues("username"),
         password: getValues("password"),
         avatar: getValues("avatar"),
-      }) as AxiosResponse;
+      })) as AxiosResponse;
       const newUser = res.data as User;
       dispatch(setUser(newUser));
       dispatch(setToken(res.data.token));
+      dispatch(setMessage(link));
     } catch (error) {
       dispatch(setError(`Registration error: ${error}`));
     }
@@ -88,10 +98,14 @@ export default function RegistrationForm() {
     if (errors.avatar) {
       dispatch(setError(`Avatar error: ${errors.avatar.message}`));
     }
-    if(isSuccess){
-      dispatch(setMessage("The registration was successful!"))
-    }
-  }, [dispatch, errors.avatar, errors.confirmPassword, errors.email, errors.password, errors.username, isSuccess]);
+  }, [
+    dispatch,
+    errors.avatar,
+    errors.confirmPassword,
+    errors.email,
+    errors.password,
+    errors.username,
+  ]);
   return (
     <Container sx={register_wrapper}>
       <Controller

@@ -94,15 +94,6 @@ export const appApi = createApi({
       },
       providesTags: ["Cards"],
     }),
-    fetchCardsCount: builder.query({
-      query: (category: object | undefined) => {
-        return {
-          url: `${CARD}/count/${category}`,
-          method: "GET",
-        };
-      },
-      providesTags: ["Cards"],
-    }),
     editField: builder.mutation({
       query: (card: EditField) => {
         return {
@@ -147,7 +138,6 @@ export const {
   useFetchCardsPublicCategoriesQuery,
   useFetchGameCategoriesQuery,
   useFetchGameCardsQuery,
-  useFetchCardsCountQuery,
   useEditFieldMutation,
   useEditPublicMutation,
   useDeleteCardMutation,

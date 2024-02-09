@@ -1,6 +1,7 @@
 import {
-  DARK_THEME,
-  LIGHT_THEME,
+  GET_THEME,
+  SET_DARK_THEME,
+  SET_LIGHT_THEME,
   ThemeAction,
 } from "../actions/themeActionType";
 
@@ -12,21 +13,48 @@ const initialState: ThemeState = {
   themeType: "dark",
 };
 
+export function setDarkTheme(){
+  return{
+    type: SET_DARK_THEME,
+    payload: 'dark',
+  }
+}
+
+export function setLightTheme(){
+  return{
+    type: SET_LIGHT_THEME,
+    payload: 'light',
+  }
+}
+
+export function getTheme(){ //will be used in App.tsx in order to ensure that the theme persists even if the page is reloaded
+  const currentTheme = localStorage.getItem("Theme")
+  return{
+    type: GET_THEME,
+    payload: currentTheme,
+  }
+}
+
 const themeReducer = (
   state = initialState,
   action: ThemeAction
 ) => {
   switch (action.type) {
-    case DARK_THEME:
+    case SET_DARK_THEME:
       return {
         ...state,
-        themeType: "dark",
+        themeType: action.payload,
       };
-    case LIGHT_THEME:
+    case SET_LIGHT_THEME:
       return {
         ...state,
-        themeType: "light",
+        themeType: action.payload,
       };
+    case GET_THEME:
+      return{
+        ...state,
+        themeType: action.payload
+      }
     default:
       return state;
   }

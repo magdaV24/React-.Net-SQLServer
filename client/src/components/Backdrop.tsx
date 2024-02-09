@@ -1,15 +1,14 @@
 import MyBackdrop from "@mui/material/Backdrop";
 import { CircularProgress } from "@mui/material";
-interface Props{
-    open: boolean;
-}
-export default function Backdrop({open}: Props) {
+import { RootState, useAppSelector } from "../redux/store";
 
+export default function Backdrop() {
+ const loading = useAppSelector((state: RootState) => state.cardReducer.loading);
   return (
     <>
-      {open && (
+      {loading && (
         <MyBackdrop
-          open={open}
+          open={loading}
         >
           <CircularProgress color="inherit" />
         </MyBackdrop>

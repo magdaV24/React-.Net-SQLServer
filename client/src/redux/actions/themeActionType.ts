@@ -1,14 +1,20 @@
-export const DARK_THEME = 'DARK_THEME';
-export const LIGHT_THEME = 'LIGHT_THEME';
+export const SET_DARK_THEME = 'SET_DARK_THEME';
+export const SET_LIGHT_THEME = 'SET_LIGHT_THEME';
+export const GET_THEME = 'GET_THEME';
 
-export type DarkThemeAction = {
-    type: typeof DARK_THEME;
-    payload: number
+export type SetDarkThemeAction = {
+    type: typeof SET_DARK_THEME;
+    payload: 'dark'
 }
 
-export type LightThemeAction = {
-    type: typeof LIGHT_THEME;
-    payload: number
+export type SetLightThemeAction = {
+    type: typeof SET_LIGHT_THEME;
+    payload: 'light'
 }
 
-export type ThemeAction = DarkThemeAction | LightThemeAction
+export type GetThemeAction = {
+    type: typeof GET_THEME;
+    payload: 'light' | "dark"
+}
+
+export type ThemeAction = SetDarkThemeAction | SetLightThemeAction | GetThemeAction

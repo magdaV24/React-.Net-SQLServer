@@ -1,18 +1,32 @@
-import { Container, TextField, CircularProgress, Button } from "@mui/material";
+import {
+  Container,
+  TextField,
+  CircularProgress,
+  Button,
+  Typography,
+} from "@mui/material";
 import { Controller, useForm } from "react-hook-form";
 import { login_wrapper } from "../styles/loginForm";
 import { setToken, setUser } from "../redux/reducers/userReducer";
 import { useAppDispatch } from "../redux/store";
-import { button_style } from "../styles/app";
+import { alert_typography, button_style } from "../styles/app";
 import { useEffect } from "react";
 import { setError } from "../redux/reducers/errorReducer";
 import { setMessage } from "../redux/reducers/messageReducer";
 import { AxiosResponse } from "axios";
 import { useLoginMutation } from "../redux/api/appApi";
 import { User } from "../types/UserType";
+import { useNavigate } from "react-router-dom";
 
 export default function LoginForm() {
   const dispatch = useAppDispatch();
+
+  const navigate = useNavigate();
+  const link = (
+    <Typography onClick={() => navigate("/dashboard")} sx={alert_typography}>
+      You logged in successfully! .Click here to go to the dashboard.
+    </Typography>
+  ) as unknown as string | Element;
   const {
     getValues,
     handleSubmit,
@@ -20,7 +34,7 @@ export default function LoginForm() {
     control,
   } = useForm();
 
-  const [login, { isLoading, isSuccess }] = useLoginMutation();
+  const [login, { isLoading }] = useLoginMutation();
 
   const onSubmit = async () => {
     const input = {
@@ -32,7 +46,7 @@ export default function LoginForm() {
       const currentUser = res.data as User;
       dispatch(setUser(currentUser));
       dispatch(setToken(res.data.token));
-      dispatch(setMessage("Logged in successfully!"));
+      dispatch(setMessage(link));
     } catch (error) {
       dispatch(setError(`Log in error: ${error}`));
     }
@@ -45,7 +59,7 @@ export default function LoginForm() {
     if (errors.password) {
       dispatch(setError(`Email error: ${errors.password.message}`));
     }
-  }, [dispatch, errors.password, errors.username, isSuccess]);
+  }, [dispatch, errors.password, errors.username]);
 
   const isNotEmpty = (value: string) => value.trim() !== "";
   return (
