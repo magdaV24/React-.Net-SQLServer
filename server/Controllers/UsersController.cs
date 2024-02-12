@@ -40,12 +40,12 @@ namespace server.Controllers
 
                 if (user == null)
                 {
-                    return BadRequest(new { message = "Incorrect username!" });
+                    return BadRequest("Incorrect username!");
                 }
                 var checkPassword = VerifyPassword(loginDTO.Password, user.PasswordHash);
                 if (!checkPassword)
                 {
-                    return BadRequest(new { message = "The password is not correct!" });
+                    return BadRequest("The password is not correct!");
 
                 };
 

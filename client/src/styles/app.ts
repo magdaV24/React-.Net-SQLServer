@@ -35,12 +35,16 @@ export const fab_style_two = {
 export const modal = {
   display: "flex",
   justifyContent: "center",
-  alignItems: "center",
+  alignItems: "flex-start",
   overflowY: "scroll",
-  backgroundColor: 'background.paper',
+  mb: 5
 };
 
-export   const alert_typography={ minHeight: "10vh", height: "fit-content", mt: 2 }
+export const alert_typography = {
+  minHeight: "10vh",
+  height: "fit-content",
+  mt: 2,
+};
 
 export const success_alert = {
   backgroundColor: "success.main",
@@ -48,12 +52,12 @@ export const success_alert = {
   minHeight: "20vh",
   height: "fit-content",
   p: 2,
-}
+};
 
-export const error_alert={
+export const error_alert = {
   backgroundColor: "error.main",
   width: "30vw",
   minHeight: "20vh",
   height: "fit-content",
   p: 2,
-}
+};

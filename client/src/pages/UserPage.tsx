@@ -7,10 +7,13 @@ import EditCardForm from "../forms/EditCardForm";
 import useUserCards from "../hooks/useUserCards";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import UserCardWithPhotos from "../components/UserCardWithPhotos";
+import UserCard from "../components/UserCard";
 
 export default function UserPage() {
   const [id, setId] = useState("");
   const user = useAppSelector((state: RootState) => state.userReducer.user);
+  const currentCard = useAppSelector((state: RootState)=> state.cardReducer.card)
   const userId = user?.id;
   const cards = useUserCards(id!);
   const navigate = useNavigate();
@@ -33,8 +36,13 @@ export default function UserPage() {
       <Bar />
       <Box sx={{display: 'flex', flexDirection:'column', gap: 2, mt: 10}}>
       {cards &&
-        cards.map((card: Card) => <EditCardForm card={card} key={card.id} />)}
+        cards.map((card: Card) => (
+          <Box>
+            {(card.hasPhotos === 0) ? <UserCard card={card}/> : <UserCardWithPhotos card={card}/>}
+          </Box>
+        ))}
       </Box>
+      {currentCard && <EditCardForm/>}
     </Container>
   );
 }

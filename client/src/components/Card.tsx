@@ -6,18 +6,21 @@ import {
   Button,
   FormControlLabel,
   Radio,
-  RadioGroup,
+  Grid,
 } from "@mui/material";
 import { Card as CardType } from "../types/CardType";
 import { useMemo, useState } from "react";
 import { increment } from "../redux/reducers/gameReducer";
-import { useAppDispatch } from "../redux/store";
+import { RootState, useAppDispatch, useAppSelector } from "../redux/store";
+import { card_box, card_wrapper } from "../styles/card";
 
 interface Card {
   card: CardType;
+  count: number;
 }
 
-export default function CardComponent({ card }: Card) {
+export default function CardComponent({ card, count }: Card) {
+  const limit = useAppSelector((state: RootState) => state.cardReducer.limit);
   const options = [
     card.answer,
     card.wrongAnswerOne,
@@ -46,10 +49,12 @@ export default function CardComponent({ card }: Card) {
 
   const [background, setBackground] = useState("background.paper");
   const [value, setValue] = useState("");
+  const [checked, setChecked] = useState("");
   const [disabled, setDisabled] = useState(false);
 
-  const handleRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setValue((event.target as HTMLInputElement).value);
+  const handleValueChange = (value: string) => {
+    setValue(value);
+    setChecked(value)
   };
 
   const onSubmit = (e: unknown) => {
@@ -64,48 +69,42 @@ export default function CardComponent({ card }: Card) {
   };
 
   return (
-    <Box sx={{ backgroundColor: `${background}` }}>
+    <Box sx={{ ...card_wrapper, backgroundColor: background }}>
       <CardContent>
         <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-          {card.category}
+          {card.category} - Question {count}/{limit}
         </Typography>
-        <Typography variant="h5" component="div">
+        <Typography variant="h5" component="div" sx={{ mt: 1, mb: 1 }}>
           {card.question}
         </Typography>
-        <RadioGroup
-          aria-labelledby="demo-error-radios"
-          name="quiz"
-          value={value}
-          onChange={handleRadioChange}
+        <Grid
+          container
+          sx={{
+            display: "grid",
+            gridTemplateColumns: "repeat(2, 1fr)",
+            gap: 2,
+          }}
         >
-          <FormControlLabel
-            value={options[i[0]]}
-            control={<Radio />}
-            label={options[i[0]]}
-            disabled={disabled}
-          />
-          <FormControlLabel
-            value={options[i[1]]}
-            control={<Radio />}
-            disabled={disabled}
-            label={options[i[1]]}
-          />
-          <FormControlLabel
-            value={options[i[2]]}
-            disabled={disabled}
-            control={<Radio />}
-            label={options[i[2]]}
-          />
-          <FormControlLabel
-            value={options[i[3]]}
-            control={<Radio />}
-            disabled={disabled}
-            label={options[i[3]]}
-          />
-        </RadioGroup>
+          {[0, 1, 2, 3].map((index) => (
+            <Grid item xs={6} key={index}>
+              <Box sx={{ ...card_box, backgroundColor: background }}>
+                <FormControlLabel
+                  value={options[i[index]]}
+                  control={<Radio />}
+                  label={options[i[index]]}
+                  disabled={disabled}
+                  checked={checked === options[i[index]]}
+                  onChange={() =>
+                    handleValueChange(options[i[index]])
+                  }
+                />
+              </Box>
+            </Grid>
+          ))}
+        </Grid>
       </CardContent>
-      <CardActions>
-        <Button size="medium" variant="outlined" onClick={(e) => onSubmit(e)}>
+      <CardActions sx={{ p: 2 }}>
+        <Button size="large" variant="contained" onClick={(e) => onSubmit(e)}>
           Submit answer
         </Button>
       </CardActions>

@@ -15,10 +15,12 @@ import { RootState, useAppDispatch, useAppSelector } from "./redux/store";
 import { getToken, getUser } from "./redux/reducers/userReducer";
 import Backdrop from "./components/Backdrop";
 import { getTheme } from "./redux/theme/themeReducer";
+import useCheckToken from "./hooks/useCheckToken";
 
 function App() {
   const dispatch = useAppDispatch();
   const { user, token } = useAppSelector((state: RootState) => state.userReducer)
+  const checkToken = useCheckToken()
   useEffect(() => {
     dispatch(getTheme()) 
     if (!user) {
@@ -27,7 +29,12 @@ function App() {
     if(!token){
       dispatch(getToken())
     }
-  },[dispatch, token, user])
+    const storedUser = localStorage.getItem("User");
+    if(storedUser === "undefined"){
+      localStorage.removeItem("User");
+    }
+    checkToken(token);
+  },[dispatch, token, user, checkToken])
   return (
     <CssBaseline>
       <BrowserRouter>

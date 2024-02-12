@@ -11,6 +11,9 @@ import {
   EDIT_FIELD,
   LOGIN,
   REGISTER,
+  CHANGE_PHOTO,
+  ADD_PHOTO,
+  DELETE_PHOTO,
 } from "../../utils/urls";
 import { EditPublic } from "../../types/EditPublicType";
 import { EditField } from "../../types/EditFieldType";
@@ -18,12 +21,14 @@ import { User } from "../../types/UserType";
 import { RegisterDTO } from "../../types/RegisterDTO";
 import { LoginDTO } from "../../types/LoginDTO";
 import store from "../store";
+import { ChangePhoto } from "../../types/ChangePhotoType";
+import { AddPhoto } from "../../types/AddPhotoType";
+import { DeletePhoto } from "../../types/DeletePhotoType";
 
 type Input = {
   category: string;
   limit: number;
 };
-
 
 export const appApi = createApi({
   reducerPath: "appApi",
@@ -38,7 +43,7 @@ export const appApi = createApi({
       return headers;
     },
   }),
-  tagTypes: ["User", "Cards"],
+  tagTypes: ["User", "Cards", "Card"],
   endpoints: (builder) => ({
     login: builder.mutation<User, LoginDTO>({
       query(input) {
@@ -66,6 +71,15 @@ export const appApi = createApi({
           body: input,
         };
       },
+    }),
+    fetchCard: builder.query({
+      query(id: number) {
+        return {
+          url: `${CARD}/${id}`,
+          method: "GET",
+        };
+      },
+      providesTags: ["Card"],
     }),
     fetchCardsPublicCategories: builder.query({
       query: () => {
@@ -103,6 +117,33 @@ export const appApi = createApi({
         };
       },
     }),
+    changePhoto: builder.mutation({
+      query: (input: ChangePhoto) => {
+        return{
+          url: CHANGE_PHOTO,
+          method: "PUT",
+          body: input
+        }
+      }
+    }),
+    addPhoto: builder.mutation({
+      query: (input: AddPhoto)=>{
+        return{
+          url: ADD_PHOTO,
+          method: "PUT",
+          body: input
+        }
+      }
+    }),
+    deletePhoto: builder.mutation({
+      query: (input: DeletePhoto)=>{
+        return{
+          url: DELETE_PHOTO,
+          method: "PUT",
+          body: input
+        }
+      }
+    }),
     editPublic: builder.mutation({
       query: (card: EditPublic) => {
         return {
@@ -137,9 +178,13 @@ export const {
   useAddCardMutation,
   useFetchCardsPublicCategoriesQuery,
   useFetchGameCategoriesQuery,
+  useFetchCardQuery,
   useFetchGameCardsQuery,
   useEditFieldMutation,
   useEditPublicMutation,
   useDeleteCardMutation,
   useFetchUserCardsQuery,
+  useChangePhotoMutation,
+  useAddPhotoMutation,
+  useDeletePhotoMutation
 } = appApi;

@@ -2,8 +2,6 @@ import {
   Box,
   Button,
   Container,
-  Typography,
-  Card as Wrapper,
 } from "@mui/material";
 import { page_wrapper } from "../styles/app";
 import CloseSharpIcon from "@mui/icons-material/CloseSharp";
@@ -17,7 +15,8 @@ import { Card } from "../types/CardType";
 import { closeInitGame, reset } from "../redux/reducers/gameReducer";
 import { resetCardState } from "../redux/reducers/cardReducer";
 import { useNavigate } from "react-router-dom";
-import { card_wrapper, cards_wrapper } from "../styles/card";
+import { cards_wrapper } from "../styles/card";
+import CardWithPhotos from "../components/CardWithPhotos";
 
 export default function Game() {
   const { category, limit } = useAppSelector(
@@ -52,14 +51,13 @@ export default function Game() {
         </Box>
         <Box sx={cards_wrapper}>
           {data &&
-            data.map((card: Card, index: number) => (
-              <Wrapper key={index} sx={card_wrapper}>
-                <Typography>
-                  Question {index + 1}/{data.length}
-                </Typography>
-                <CardComponent card={card} key={card.id} />
-              </Wrapper>
-            ))}
+            data.map((card: Card, index: number) =>
+              card.hasPhotos === 0 ? (
+                <CardComponent card={card} key={card.id} count={index + 1} />
+              ) : (
+                <CardWithPhotos card={card} key={card.id} count={index + 1} />
+              )
+            )}
         </Box>
         <Button
           onClick={() => setOpenModal(true)}

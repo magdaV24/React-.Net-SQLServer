@@ -53,4 +53,4 @@ In order to establish a connection between the client and the server, I have cho
 
 ## Functionality
 
-The application comes with a variety of features: authentication and creating cards, keeping the cards pulic, or allowing them to be public, editing and deleting them. And, with the help of Redux, the user can ask for quizes and, at the end, they will get back their score. 
+The application comes with a variety of features: authentication and creating cards, keeping the cards public, or allowing them to be public, editing and deleting them. And, with the help of Redux, the user can ask for quizzes and, at the end, they will get back their score. 

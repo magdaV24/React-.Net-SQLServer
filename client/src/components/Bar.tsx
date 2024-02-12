@@ -18,7 +18,7 @@ import { button_box } from "../styles/bar";
 export default function Bar() {
   const user = useAppSelector((state: RootState) => state.userReducer.user);
   const dispatch = useAppDispatch();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const handleLogout = () => {
     dispatch(clearUser());
@@ -33,7 +33,7 @@ export default function Bar() {
           color="inherit"
           aria-label="menu"
           sx={{ mr: 2 }}
-          onClick={() => navigate('/dashboard')}
+          onClick={() => navigate("/dashboard")}
         >
           <HistoryEduSharpIcon />
         </IconButton>
@@ -41,28 +41,55 @@ export default function Bar() {
           Minerva
         </Typography>
         {user ? (
-          <Box
-            sx={button_box}
-          >
-            <Typography onClick={() => navigate(`/home/${user.userName}`)}>Welcome back, {user.userName}</Typography>
-            <Box>
+          <Box sx={button_box}>
+            <Typography onClick={() => navigate(`/home/${user.userName}`)}>
+              Welcome back, {user.userName}
+            </Typography>
+            <Box
+              sx={{
+                borderRadius: "50%",
+                overflow: "hidden",
+                width: 50,
+                height: 50,
+              }}
+            >
               <AdvancedImage
                 cldImg={cld
                   .image(user.avatar)
                   .resize(fill().width(50).height(50))}
               />
             </Box>
-            <Button onClick={handleLogout} variant="contained" color="secondary">
+            <Button
+              onClick={handleLogout}
+              variant="contained"
+              color="secondary"
+            >
               LOGOUT
             </Button>
-            <Button onClick={() => navigate("/cardForm")} variant="contained" color="secondary">
+            <Button
+              onClick={() => navigate("/cardForm")}
+              variant="contained"
+              color="secondary"
+            >
               Add card
             </Button>
           </Box>
         ) : (
           <Box sx={button_box}>
-            <Button variant="contained" color="secondary" onClick={() => navigate("/login")}>Login</Button>
-            <Button variant="contained" color="secondary" onClick={() => navigate("/register")}>Register</Button>
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={() => navigate("/login")}
+            >
+              Login
+            </Button>
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={() => navigate("/register")}
+            >
+              Register
+            </Button>
           </Box>
         )}
       </Toolbar>

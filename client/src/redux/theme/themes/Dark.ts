@@ -29,5 +29,6 @@ export const DarkTheme: ThemeOptions = {
       main: '#2e7d32',
       contrastText: '#ffebee',
     },
+    divider: '#5e4e49',
   },
 };

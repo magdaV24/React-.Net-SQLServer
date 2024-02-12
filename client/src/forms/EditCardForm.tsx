@@ -1,415 +1,76 @@
-import {
-  TableContainer,
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  TextField,
-  Box,
-  CircularProgress,
-  Button,
-  Checkbox,
-  FormControlLabel,
-} from "@mui/material";
-import { useState } from "react";
-import { Controller, useForm } from "react-hook-form";
-import { Card } from "../types/CardType";
-import PublishSharpIcon from "@mui/icons-material/PublishSharp";
-import {
-  appApi,
-  useDeleteCardMutation,
-  useEditFieldMutation,
-  useEditPublicMutation,
-} from "../redux/api/appApi";
-import { useAppDispatch } from "../redux/store";
-import {
-  button_box,
-  editing_box,
-  table_container,
-} from "../styles/editCardForm";
+import { Box, Modal } from "@mui/material";
+import { RootState, useAppDispatch, useAppSelector } from "../redux/store";
+import EditFieldWithPhoto from "../components/EditFieldWithPhoto";
+import EditField from "../components/EditField";
+import { setEdit } from "../redux/reducers/cardReducer";
+import EditPublic from "../components/EditPublic";
+import { modal } from "../styles/app";
 
-interface Props {
-  card: Card;
-}
-
-export default function EditCardForm({ card }: Props) {
+export default function EditCardForm() {
   const dispatch = useAppDispatch();
-  const { control, handleSubmit, getValues, setValue } = useForm();
-  const [editing, setEditing] = useState([
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-  ]);
+  const card = useAppSelector((state: RootState) => state.cardReducer.card);
+  const isEditing = useAppSelector(
+    (state: RootState) => state.cardReducer.isEditing
+  );
 
-  const editingState = (i: number) => {
-    const newEditing = [...editing];
-    newEditing[i] = !newEditing[i];
-    setEditing(newEditing);
-  };
-  const [editField, { isLoading }] = useEditFieldMutation();
-  const [editPublic, { isLoading: publicLoading }] = useEditPublicMutation();
-  const [deleteCard, { isLoading: deleteLoading }] = useDeleteCardMutation();
-
-  const setPublic = (input: number) => {
-    if (input === 0) {
-      return false;
-    } else {
-      return true;
-    }
-  };
-
-  const displayPublic = (input: number) => {
-    if (input === 0) {
-      return "Private";
-    }
-    return "Public";
-  };
-
-  const submitEditField = (field: string) => {
-    const input = { id: card.id, field: field, value: getValues(`${field}`) };
-    editField(input);
-    dispatch(appApi.util.resetApiState())
-  };
-  const submitEditPublic = (input: boolean) => {
-    const edit = { id: card.id, value: getValues("Public") };
-    if (input === false) {
-      edit.value = 0;
-    } else {
-      edit.value = 1;
-    }
-    editPublic(edit);
-    dispatch(appApi.util.resetApiState())
-  };
-
-  const submitDelete = () => {
-    deleteCard(card.id);
-    dispatch(appApi.util.resetApiState());
-  };
   return (
-    <TableContainer sx={table_container}>
-      <Table>
-        <TableHead>
-          <TableRow sx={{ align: "left", backgroundColor: "secondary.dark" }}>
-            <TableCell sx={{ width: "10%", backgroundColor: "secondary.dark" }}>
-              Category:
-            </TableCell>
-            <TableCell
-              sx={{ width: "90%", backgroundColor: "secondary.main" }}
-              onDoubleClick={() => editingState(0)}
-            >
-              {editing[0] ? (
-                <Box sx={editing_box}>
-                  <Controller
-                    control={control}
-                    name="Category"
-                    render={({ field }) => (
-                      <TextField
-                        sx={{ width: "90%", backgroundColor: "secondary.main" }}
-                        autoFocus
-                        {...field}
-                        defaultValue={card?.category}
-                        onChange={(e) => setValue("Category", e.target.value)}
-                      />
-                    )}
-                  />
-
-                  {isLoading ? (
-                    <Box>
-                      <CircularProgress />
-                    </Box>
-                  ) : (
-                    <Button
-                      variant="outlined"
-                      onClick={handleSubmit(() => submitEditField("Category"))}
-                      sx={{ height: "7vh" }}
-                    >
-                      <PublishSharpIcon />
-                    </Button>
-                  )}
-                </Box>
-              ) : (
-                card?.category
-              )}
-            </TableCell>
-          </TableRow>
-          <TableRow sx={{ align: "left", backgroundColor: "secondary.dark" }}>
-            <TableCell>Question:</TableCell>
-            <TableCell
-              sx={{ backgroundColor: "secondary.main" }}
-              onDoubleClick={() => editingState(1)}
-            >
-              {editing[1] ? (
-                <Box sx={editing_box}>
-                  <Controller
-                    control={control}
-                    name="Question"
-                    render={({ field }) => (
-                      <TextField
-                        autoFocus
-                        {...field}
-                        defaultValue={card?.question}
-                        onChange={(e) => setValue("Question", e.target.value)}
-                      />
-                    )}
-                  />
-                  {isLoading ? (
-                    <Box>
-                      <CircularProgress />
-                    </Box>
-                  ) : (
-                    <Button
-                      variant="outlined"
-                      onClick={handleSubmit(() => submitEditField("Question"))}
-                      sx={{ height: "7vh" }}
-                    >
-                      <PublishSharpIcon />
-                    </Button>
-                  )}
-                </Box>
-              ) : (
-                card?.question
-              )}
-            </TableCell>
-          </TableRow>
-          <TableRow sx={{ align: "left", backgroundColor: "secondary.dark" }}>
-            <TableCell>Answer:</TableCell>
-            <TableCell
-              sx={{ backgroundColor: "secondary.main" }}
-              onDoubleClick={() => editingState(2)}
-            >
-              {editing[2] ? (
-                <Box sx={editing_box}>
-                  <Controller
-                    control={control}
-                    name="Answer"
-                    render={({ field }) => (
-                      <TextField
-                        autoFocus
-                        {...field}
-                        defaultValue={card?.answer}
-                        onChange={(e) => setValue("Answer", e.target.value)}
-                      />
-                    )}
-                  />
-                  {isLoading ? (
-                    <Box>
-                      <CircularProgress />
-                    </Box>
-                  ) : (
-                    <Button
-                      variant="outlined"
-                      onClick={handleSubmit(() => submitEditField("Answer"))}
-                      sx={{ height: "7vh" }}
-                    >
-                      <PublishSharpIcon />
-                    </Button>
-                  )}
-                </Box>
-              ) : (
-                card?.answer
-              )}
-            </TableCell>
-          </TableRow>
-          <TableRow sx={{ align: "left", backgroundColor: "secondary.dark" }}>
-            <TableCell>Wrong Answer One:</TableCell>
-            <TableCell
-              sx={{ backgroundColor: "secondary.main" }}
-              onDoubleClick={() => editingState(3)}
-            >
-              {editing[3] ? (
-                <Box sx={editing_box}>
-                  <Controller
-                    control={control}
-                    name="WrongAnswerOne"
-                    render={({ field }) => (
-                      <TextField
-                        autoFocus
-                        {...field}
-                        defaultValue={card?.wrongAnswerOne}
-                        onChange={(e) => field.onChange(e.target.value)}
-                      />
-                    )}
-                  />
-                  {isLoading ? (
-                    <Box>
-                      <CircularProgress />
-                    </Box>
-                  ) : (
-                    <Button
-                      variant="outlined"
-                      onClick={handleSubmit(() =>
-                        submitEditField("WrongAnswerOne")
-                      )}
-                      sx={{ height: "7vh" }}
-                    >
-                      <PublishSharpIcon />
-                    </Button>
-                  )}
-                </Box>
-              ) : (
-                card?.wrongAnswerOne
-              )}
-            </TableCell>
-          </TableRow>
-          <TableRow sx={{ align: "left", backgroundColor: "secondary.dark" }}>
-            <TableCell>Wrong Answer Two:</TableCell>
-            <TableCell
-              sx={{ backgroundColor: "secondary.main" }}
-              onDoubleClick={() => editingState(4)}
-            >
-              {editing[4] ? (
-                <Box sx={editing_box}>
-                  <Controller
-                    control={control}
-                    name="WrongAnswerTwo"
-                    render={({ field }) => (
-                      <TextField
-                        autoFocus
-                        {...field}
-                        defaultValue={card?.wrongAnswerTwo}
-                        onChange={(e) =>
-                          setValue("WrongAnswerTwo", e.target.value)
-                        }
-                      />
-                    )}
-                  />
-                  {isLoading ? (
-                    <Box>
-                      <CircularProgress />
-                    </Box>
-                  ) : (
-                    <Button
-                      variant="outlined"
-                      onClick={handleSubmit(() =>
-                        submitEditField("WrongAnswerTwo")
-                      )}
-                      sx={{ height: "7vh" }}
-                    >
-                      <PublishSharpIcon />
-                    </Button>
-                  )}
-                </Box>
-              ) : (
-                card?.wrongAnswerTwo
-              )}
-            </TableCell>
-          </TableRow>
-          <TableRow sx={{ align: "left", backgroundColor: "secondary.dark" }}>
-            <TableCell>Wrong Answer Three:</TableCell>
-            <TableCell
-              sx={{ backgroundColor: "secondary.main" }}
-              onDoubleClick={() => editingState(5)}
-            >
-              {editing[5] ? (
-                <Box sx={editing_box}>
-                  <Controller
-                    control={control}
-                    name="WrongAnswerThree"
-                    render={({ field }) => (
-                      <TextField
-                        autoFocus
-                        {...field}
-                        defaultValue={card?.wrongAnswerThree}
-                        onChange={(e) =>
-                          setValue("WrongAnswerThree", e.target.value)
-                        }
-                      />
-                    )}
-                  />
-                  {isLoading ? (
-                    <Box>
-                      <CircularProgress />
-                    </Box>
-                  ) : (
-                    <Button
-                      variant="outlined"
-                      onClick={handleSubmit(() =>
-                        submitEditField("WrongAnswerThree")
-                      )}
-                      sx={{ height: "7vh" }}
-                    >
-                      <PublishSharpIcon />
-                    </Button>
-                  )}
-                </Box>
-              ) : (
-                card?.wrongAnswerThree
-              )}
-            </TableCell>
-          </TableRow>
-          <TableRow sx={{ align: "left", backgroundColor: "secondary.dark" }}>
-            <TableCell>Public:</TableCell>
-            <TableCell
-              sx={{ backgroundColor: "secondary.main" }}
-              onDoubleClick={() => editingState(6)}
-            >
-              {editing[6] ? (
-                <Box sx={editing_box}>
-                  <Controller
-                    name="Public"
-                    control={control}
-                    defaultValue={setPublic(card?.public)}
-                    render={({ field }) => (
-                      <FormControlLabel
-                        label="Make this card public?"
-                        control={
-                          <Checkbox
-                            checked={field.value}
-                            onChange={() => setValue("Public", !field.value)}
-                          />
-                        }
-                      />
-                    )}
-                  />
-                  {publicLoading ? (
-                    <Box>
-                      <CircularProgress />
-                    </Box>
-                  ) : (
-                    <Button
-                      variant="outlined"
-                      onClick={handleSubmit(() =>
-                        submitEditPublic(getValues("Public"))
-                      )}
-                      sx={{ height: "7vh" }}
-                    >
-                      <PublishSharpIcon />
-                    </Button>
-                  )}
-                </Box>
-              ) : (
-                displayPublic(card?.public)
-              )}
-            </TableCell>
-          </TableRow>
-        </TableHead>
-      </Table>
-      <Box sx={button_box}>
-        {deleteLoading ? (
-          <Button
-            color="error"
-            variant="contained"
-            size="large"
-            sx={{ width: "100%" }}
-          >
-            <CircularProgress />
-          </Button>
-        ) : (
-          <Button
-            color="error"
-            variant="contained"
-            size="large"
-            sx={{ width: "100%" }}
-            onClick={submitDelete}
-          >
-            Delete card
-          </Button>
-        )}
+    <Modal open={isEditing} onClose={() => dispatch(setEdit(false))} sx={modal}>
+      <Box
+        sx={{
+          backgroundColor: "background.paper",
+          minWidth: "60vw",
+          width: "fit-content",
+          minHeight: "80vh",
+          height: "fit-content",
+          p: 2,
+          mt: 5,
+          gap: 2
+        }}
+      >
+        <EditField
+          fieldValue={card!.category}
+          cardId={card!.id}
+          fieldName={"Category"}
+        />
+        <EditField
+          fieldName={"Question"}
+          cardId={card!.id}
+          fieldValue={"Question"}
+        />
+        <EditFieldWithPhoto
+          field={"Answer"}
+          fieldValue={card!.answer}
+          photo={card!.answerPhoto}
+          photoField={"AnswerPhoto"}
+          cardId={card!.id}
+          fieldName={"Answer"}
+        />
+        <EditFieldWithPhoto
+          field={"WrongAnswerOne"}
+          fieldValue={card!.wrongAnswerOne}
+          photo={card!.wrongAnswerOnePhoto}
+          photoField={"WrongAnswerOnePhoto"}
+          cardId={card!.id}
+          fieldName={"Wrong Answer One"}
+        />
+        <EditFieldWithPhoto
+          field={"WrongAnswerTwo"}
+          fieldValue={card!.wrongAnswerTwo}
+          photo={card!.wrongAnswerTwoPhoto}
+          photoField={"WrongAnswerTwoPhoto"}
+          cardId={card!.id}
+          fieldName={"Wrong Answer Two"}
+        />
+        <EditFieldWithPhoto
+          field={"WrongAnswerThree"}
+          fieldValue={card!.wrongAnswerThree}
+          photo={card!.wrongAnswerThreePhoto}
+          photoField={"WrongAnswerThreePhoto"}
+          cardId={card!.id}
+          fieldName={"Wrong Answer Three"}
+        />
+        <EditPublic cardId={card!.id} value={card!.public} />
       </Box>
-    </TableContainer>
+    </Modal>
   );
 }

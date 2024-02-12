@@ -34,7 +34,7 @@ export default function LoginForm() {
     control,
   } = useForm();
 
-  const [login, { isLoading }] = useLoginMutation();
+  const [login, { isLoading, isError }] = useLoginMutation();
 
   const onSubmit = async () => {
     const input = {
@@ -45,8 +45,14 @@ export default function LoginForm() {
       const res = (await login(input)) as AxiosResponse;
       const currentUser = res.data as User;
       dispatch(setUser(currentUser));
+      if(currentUser !== undefined){
       dispatch(setToken(res.data.token));
+      localStorage.setItem("User", JSON.stringify(currentUser))
       dispatch(setMessage(link));
+      }
+      if(isError){
+       dispatch(setError(`Unsuccessful login.`));
+      }
     } catch (error) {
       dispatch(setError(`Log in error: ${error}`));
     }

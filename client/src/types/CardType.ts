@@ -8,4 +8,9 @@ export type Card={
     wrongAnswerThree: string;
     userId: string;
     public: number;
+    hasPhotos: number;
+    answerPhoto: string;
+    wrongAnswerOnePhoto: string;
+    wrongAnswerTwoPhoto: string;
+    wrongAnswerThreePhoto: string;
 }

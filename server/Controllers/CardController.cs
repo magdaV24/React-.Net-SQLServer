@@ -1,11 +1,12 @@
 ﻿using AutoMapper;
+using CloudinaryDotNet;
+using CloudinaryDotNet.Actions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using server.DTOs;
 using server.Models;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace server.Controllers
 {
@@ -15,11 +16,34 @@ namespace server.Controllers
     {
         private readonly QuizAppDbContext _context;
         private readonly IMapper _mapper;
+        Cloudinary cloudinary = new Cloudinary("cloudinary://237384797529715:VWbnhNqMeCGKZda6eqJWclzQTBY@ddfyjnala");
 
         public CardController(QuizAppDbContext context, IMapper mapper)
         {
             _mapper = mapper;
             _context = context;
+        }
+
+
+        [Authorize]
+        [HttpGet("{id}")]
+        [EnableCors("WithAuthorization")]
+        public async Task<ActionResult> GetCard(int id)
+        {
+            try
+            {
+                var card = await _context.Cards.FindAsync(id);
+                if (card == null)
+                {
+                    return NotFound();
+                }
+                return Ok(card);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred while searching for this card: {ex.Message}");
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while searching for this card. Please try again later.");
+            }
         }
 
         [HttpGet]
@@ -29,7 +53,11 @@ namespace server.Controllers
             var cards = await _context.Cards.ToListAsync();
             return Ok(cards);
         }
-        // Add a new card to the database
+        /// <summary>
+        /// Adds a new card to the database.
+        /// </summary>
+        /// <param name="cardDTO">The DTO corresponding to the card submitted.</param>
+        /// <returns>A response for the user, to know whether or not their card was added successfully.</returns>
         [Authorize]
         [HttpPost("addCard")]
         [EnableCors("WithAuthorization")]
@@ -68,7 +96,8 @@ namespace server.Controllers
         [HttpGet("fetchCardsPublicCategories")]
         public async Task<ActionResult<IEnumerable<string>>> GetPublicCategories()
         {
-            try {
+            try
+            {
                 var categories = await _context.Cards
                     .Where(c => c.Public == 1)
                     .Select(c => c.Category)
@@ -116,7 +145,7 @@ namespace server.Controllers
 
                 foreach (var category in categories)
                 {
-                    var count = await _context.Cards.Where(c => c.Category==category).CountAsync();
+                    var count = await _context.Cards.Where(c => c.Category == category).CountAsync();
                     result.Add(new { Category = category, Count = count });
                 }
 
@@ -192,11 +221,34 @@ namespace server.Controllers
                 {
                     return NotFound("Card not found.");
                 }
+                string response = "";
 
+                // Deleteing the photos from Cloudinary
+                if (card.HasPhotos == 1)
+                {
+                    var publicIds = new List<string> { card.AnswerPhoto, card.WrongAnswerOnePhoto, card.WrongAnswerTwoPhoto, card.WrongAnswerThreePhoto };
+
+                    CancellationToken cancellationToken = new CancellationToken();
+
+                    var deleteParams = new DelResParams()
+                    {
+                        PublicIds = publicIds,
+                        ResourceType = ResourceType.Image
+                    };
+                    var cloudinaryResult = await cloudinary.DeleteResourcesAsync(deleteParams, cancellationToken);
+
+                    if (cloudinaryResult == null)
+                    {
+                        response = " There was an error while trying to delete the photos!";
+                    }
+                    else
+                    {
+                        response = " The photos were successfully deleted!";
+                    }
+                }
                 _context.Cards.Remove(card);
                 await _context.SaveChangesAsync();
-
-                return Ok("Card deleted successfully!");
+                return Ok("Card deleted successfully! " + response);
             }
             catch (Exception ex)
             {
@@ -229,17 +281,17 @@ namespace server.Controllers
                 return BadRequest("Card not found!");
             }
 
-            var property = card.GetType().GetProperty(editFieldDTO.Field);
+            var field = card.GetType().GetProperty(editFieldDTO.Field);
 
-            if (property == null)
+            if (field == null)
             {
                 return BadRequest($"Field '{editFieldDTO.Field}' not found in card.");
             }
 
             try
             {
-                var convertedValue = Convert.ChangeType(editFieldDTO.Value, property.PropertyType);
-                property.SetValue(card, convertedValue);
+                var convertedValue = Convert.ChangeType(editFieldDTO.Value, field.PropertyType);
+                field.SetValue(card, convertedValue);
                 await _context.SaveChangesAsync();
                 return Ok(convertedValue);
             }
@@ -247,6 +299,185 @@ namespace server.Controllers
             {
                 Console.WriteLine($"An error occurred while trying to edit the field: {ex.Message}");
                 return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while trying to edit the field. Please try again later.");
+            }
+        }
+
+        /// <summary>
+        /// Adds a photo to a given field;
+        /// </summary>
+        /// <param name="addPhotoDTO"></param>
+        /// <returns></returns>
+
+        [Authorize]
+        [HttpPut("addPhoto")]
+        [EnableCors("WithAuthorization")]
+
+        public async Task<ActionResult> AddPhoto(AddPhotoDTO addPhotoDTO)
+        {
+            try
+            {
+                var card = await _context.Cards.FindAsync(addPhotoDTO.Id);
+                if (card == null)
+                {
+                    return NotFound();
+                }
+                var field = card.GetType().GetProperty(addPhotoDTO.Field);
+                var hasPhotos = card.HasPhotos;
+
+                if(hasPhotos == 0)
+                {
+                    var property = card.GetType().GetProperty(card.HasPhotos.ToString());
+                    property.SetValue(card, 1);
+                }
+                if (field == null)
+                {
+                    return BadRequest($"Field '{addPhotoDTO.Field}' not found in card.");
+                }
+
+                field.SetValue(card, addPhotoDTO.PublicId);
+                await _context.SaveChangesAsync();  
+
+                return Ok("Photo added successfully!");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred while trying to add the photo: {ex.Message}");
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while trying to add the photo. Please try again later.");
+            }
+        }
+
+        /// <summary>
+        /// Changes the old value of the public id of the photo with the public id of it's replacement. 
+        /// Deletes the old photo from Cloudinary, using the old public id.
+        /// </summary>
+        /// <param name="changePhotoDTO">The DTO necessary for changing the photo, containing the old public id and the new one, the card's id and the field's name</param>
+        /// <returns>A message informing the user whether or not the change was successful.</returns>
+
+        [Authorize]
+        [HttpPut("changePhoto")]
+        [EnableCors("WithAuthorization")]
+
+        public async Task<ActionResult> ChangePhoto(ChangePhotoDTO changePhotoDTO)
+        {
+            try
+            {
+                //Changing the old public_id of the photo to the new one;
+                var card = await _context.Cards.FindAsync(changePhotoDTO.Id);
+                if (card == null)
+                {
+                    return NotFound();
+                }
+                var field = card.GetType().GetProperty(changePhotoDTO.Field);
+
+                if (field == null)
+                {
+                    return BadRequest($"Field '{changePhotoDTO.Field}' not found in card.");
+                }
+
+                var newPublicId = Convert.ChangeType(changePhotoDTO.NewPublicId, field.PropertyType);
+                field.SetValue(card, newPublicId);
+                await _context.SaveChangesAsync();
+
+                // Deleting the old photo from Cloudinary;
+
+                string response = "";
+                var oldPublicId = changePhotoDTO.OldPublicId;
+                if (oldPublicId != " ")
+                {
+                    var publicId = new List<string> { oldPublicId };
+                    CancellationToken cancellationToken = new CancellationToken();
+
+                    var deleteParams = new DelResParams()
+                    {
+                        PublicIds = publicId,
+                        ResourceType = ResourceType.Image
+                    };
+                    var cloudinaryResult = await cloudinary.DeleteResourcesAsync(deleteParams, cancellationToken);
+
+                    if (cloudinaryResult == null)
+                    {
+                        response = " There was an error while trying to delete the photo!";
+                    }
+                    else
+                    {
+                        response = " The photo was deleted successfully!";
+                    }
+                }
+
+                return Ok("Photo changed successfully!" + response);
+            }
+            catch (Exception ex)
+            {
+
+                Console.WriteLine($"An error occurred while trying to change the photo: {ex.Message}");
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while trying to change the photo. Please try again later.");
+            }
+
+        }
+        /// <summary>
+        /// Deletes the photo from the database.
+        /// </summary>
+        /// <param name="deletePhotoDTO"></param>
+        /// <returns></returns>
+        [Authorize]
+        [HttpPut("deletePhoto")]
+        [EnableCors("WithAuthorization")]
+
+        public async Task<ActionResult> DeletePhoto(DeletePhotoDTO deletePhotoDTO)
+        {
+            try
+            {
+                // Deleting the public id from the database;
+                var card = await _context.Cards.FindAsync(deletePhotoDTO.Id);
+                if (card == null)
+                {
+                    return NotFound();
+                }
+                var field = card.GetType().GetProperty(deletePhotoDTO.Field);
+
+                if (field == null)
+                {
+                    return BadRequest($"Field '{deletePhotoDTO.Field}' not found in card.");
+                }
+
+                field.SetValue(card, "");
+
+                await _context.SaveChangesAsync();
+            
+
+                // Deleting the photo from Cloudinary;
+
+                string response = "";
+                var oldPublicId = deletePhotoDTO.PublicId;
+
+                var publicId = new List<string> { oldPublicId };
+                CancellationToken cancellationToken = new CancellationToken();
+
+                var deleteParams = new DelResParams()
+                {
+                    PublicIds = publicId,
+                    ResourceType = ResourceType.Image
+                };
+                var cloudinaryResult = await cloudinary.DeleteResourcesAsync(deleteParams, cancellationToken);
+
+                if (cloudinaryResult == null)
+                {
+                    response = " There was an error while trying to delete the photo!";
+                }
+                else
+                {
+                    response = " The photo was deleted successfully!";
+                }
+
+
+                return Ok("Photo changed successfully!" + response);
+
+            }
+            catch (Exception ex)
+            {
+
+                Console.WriteLine($"An error occurred while trying to delete the photo: {ex.Message}");
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while trying to delete the photo. Please try again later.");
             }
         }
 
@@ -326,8 +557,6 @@ namespace server.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while fetching the current user's crds. Please try again later.");
             }
         }
-
-
 
     }
 }

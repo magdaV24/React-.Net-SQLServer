@@ -22,6 +22,7 @@ import { PRESET } from "../utils/cloudinary";
 import { User } from "../types/UserType";
 import { useNavigate } from "react-router-dom";
 import { alert_typography } from "../styles/app";
+import PasswordPattern from "../components/PasswordPattern";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -43,6 +44,9 @@ export default function RegistrationForm() {
     handleSubmit,
     setValue,
   } = useForm();
+
+  const passwordRegex =
+    /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!.@#$%^&*]{8,}$/;
 
   const submit_to_cloudinary = useCloudinary();
   const [register, { isLoading }] = useRegisterMutation();
@@ -108,107 +112,137 @@ export default function RegistrationForm() {
   ]);
   return (
     <Container sx={register_wrapper}>
-      <Controller
-        name="email"
-        control={control}
-        rules={{
-          required: "Email required!",
-          pattern: {
-            value: /\S+@\S+\.\S+/,
-            message: "Provide a valid e-mail address!",
-          },
-        }}
-        render={({ field }) => (
-          <TextField
-            id="email-standard-basic"
-            label="Email"
-            variant="outlined"
-            autoFocus
-            {...field}
-          />
-        )}
-      />
-      <Controller
-        name="username"
-        control={control}
-        rules={{ required: "Username required!" }}
-        render={({ field }) => (
-          <TextField
-            id="username-standard-basic"
-            label="Username"
-            variant="outlined"
-            autoFocus
-            {...field}
-          />
-        )}
-      />
-      <Controller
-        name="password"
-        control={control}
-        rules={{ required: "Password required!" }}
-        render={({ field }) => (
-          <TextField
-            id="password-standard-basic"
-            label="Password"
-            type="password"
-            variant="outlined"
-            autoFocus
-            {...field}
-          />
-        )}
-      />
-      <Controller
-        name="confirmPassword"
-        control={control}
-        rules={{
-          required: "Confirm your password!",
-          validate: (password) =>
-            password === getValues("password") ||
-            "The two passwords do not match!",
-        }}
-        render={({ field }) => (
-          <TextField
-            id="confirm-password-standard-basic"
-            label="Confirm Password"
-            type="password"
-            variant="outlined"
-            autoFocus
-            {...field}
-          />
-        )}
-      />
-      <Controller
-        name="avatar"
-        control={control}
-        rules={{ required: "Avatar required!" }}
-        render={({ field }) => (
-          <Button
-            component="label"
-            variant="contained"
-            startIcon={<CloudUploadIcon />}
-          >
-            Upload avatar
-            <VisuallyHiddenInput
-              type="file"
-              onChange={(e) => field.onChange(e.target.files)}
+      <Box sx={{ display: "flex", gap: 2 }}>
+        <Controller
+          name="email"
+          control={control}
+          rules={{
+            required: "Email required!",
+            pattern: {
+              value: /\S+@\S+\.\S+/,
+              message: "Provide a valid e-mail address!",
+            },
+          }}
+          render={({ field }) => (
+            <TextField
+              id="email-standard-basic"
+              label="Email"
+              variant="outlined"
+              autoFocus
+              fullWidth
+              {...field}
             />
+          )}
+        />
+      </Box>
+      <Box sx={{ display: "flex", gap: 2 }}>
+        <Controller
+          name="username"
+          control={control}
+          rules={{ required: "Username required!", minLength: 5, maxLength: 20 }}
+          render={({ field }) => (
+            <TextField
+              id="username-standard-basic"
+              label="Username"
+              variant="outlined"
+              autoFocus
+              inputProps={{
+                maxLength: 20,
+                minLength: 5,
+              }}
+              fullWidth
+              {...field}
+            />
+          )}
+        />
+      </Box>
+      <Box sx={{ display: "flex", gap: 2 }}>
+        <Controller
+          name="password"
+          control={control}
+          rules={{
+            required: "Password required!",
+            pattern: {
+              value: passwordRegex,
+              message: "Password must contain at least one uppercase letter, one number, and one special character (! . @ # $ % ^ & *).",
+            },
+          }}
+          render={({ field }) => (
+            <TextField
+              id="password-standard-basic"
+              label="Password"
+              type="password"
+              variant="outlined"
+              autoFocus
+              fullWidth
+              {...field}
+            />
+          )}
+        />
+        <PasswordPattern />
+      </Box>
+      <Box sx={{ display: "flex", gap: 2 }}>
+        <Controller
+          name="confirmPassword"
+          control={control}
+          rules={{
+            required: "Confirm your password!",
+            validate: (password) =>
+              password === getValues("password") ||
+              "The two passwords do not match!",
+          }}
+          render={({ field }) => (
+            <TextField
+              id="confirm-password-standard-basic"
+              label="Confirm Password"
+              type="password"
+              variant="outlined"
+              autoFocus
+              fullWidth
+              {...field}
+            />
+          )}
+        />
+      </Box>
+      <Box sx={{ display: "flex", gap: 2 }}>
+        <Controller
+          name="avatar"
+          control={control}
+          rules={{ required: "Avatar required!" }}
+          render={({ field }) => (
+            <Button
+              component="label"
+              variant="contained"
+              startIcon={<CloudUploadIcon />}
+              fullWidth
+            >
+              Upload avatar
+              <VisuallyHiddenInput
+                type="file"
+                onChange={(e) => field.onChange(e.target.files)}
+              />
+            </Button>
+          )}
+        />
+      </Box>
+      <Box sx={{ display: "flex", gap: 2 }}>
+        {isLoading ? (
+          <Box>
+            <CircularProgress />
+          </Box>
+        ) : (
+          <Button
+            type="submit"
+            onClick={handleSubmit(onSubmit)}
+            variant="outlined"
+            size="large"
+            fullWidth
+          >
+            REGISTER
           </Button>
         )}
-      />
-      {isLoading ? (
-        <Box>
-          <CircularProgress />
-        </Box>
-      ) : (
-        <Button
-          type="submit"
-          onClick={handleSubmit(onSubmit)}
-          variant="outlined"
-          size="large"
-        >
-          REGISTER
-        </Button>
-      )}
+      </Box>
     </Container>
+    
   );
 }

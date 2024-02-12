@@ -147,3 +147,5 @@ C:\Github\React-Entityframework-SQLServer\server\obj\Debug\net8.0\server.pdb
 C:\Github\React-Entityframework-SQLServer\server\obj\Debug\net8.0\server.genruntimeconfig.cache
 C:\Github\React-Entityframework-SQLServer\server\obj\Debug\net8.0\ref\server.dll
 C:\Github\React-Entityframework-SQLServer\server\obj\Debug\net8.0\server.sourcelink.json
+C:\Github\React-Entityframework-SQLServer\server\bin\Debug\net8.0\CloudinaryDotNet.dll
+C:\Github\React-Entityframework-SQLServer\server\bin\Debug\net8.0\Newtonsoft.Json.dll
