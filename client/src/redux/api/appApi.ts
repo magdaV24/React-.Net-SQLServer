@@ -35,7 +35,7 @@ export const appApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: host,
     prepareHeaders: (headers) => {
-      const token = store.getState().userReducer.user?.token;
+      const token = store.getState().userReducer.token;
       if (token) {
         headers.set("Authorization", `Bearer ${token}`);
       }

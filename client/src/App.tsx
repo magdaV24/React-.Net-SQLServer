@@ -12,29 +12,27 @@ import CardsForm from "./forms/CardsForm";
 import Game from "./game/Game";
 import { useEffect } from "react";
 import { RootState, useAppDispatch, useAppSelector } from "./redux/store";
-import { getToken, getUser } from "./redux/reducers/userReducer";
+import { getToken, setUser } from "./redux/reducers/userReducer";
 import Backdrop from "./components/Backdrop";
 import { getTheme } from "./redux/theme/themeReducer";
 import useCheckToken from "./hooks/useCheckToken";
+import useToken from "./hooks/useToken";
 
 function App() {
   const dispatch = useAppDispatch();
   const { user, token } = useAppSelector((state: RootState) => state.userReducer)
   const checkToken = useCheckToken()
+  const currentUser = useToken();
   useEffect(() => {
     dispatch(getTheme()) 
     if (!user) {
-      dispatch(getUser());
+      dispatch(setUser(currentUser));
     }
     if(!token){
       dispatch(getToken())
     }
-    const storedUser = localStorage.getItem("User");
-    if(storedUser === "undefined"){
-      localStorage.removeItem("User");
-    }
     checkToken(token);
-  },[dispatch, token, user, checkToken])
+  },[dispatch, token, user, checkToken, currentUser])
   return (
     <CssBaseline>
       <BrowserRouter>

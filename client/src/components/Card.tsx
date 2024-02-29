@@ -85,17 +85,17 @@ export default function CardComponent({ card, count }: Card) {
             gap: 2,
           }}
         >
-          {[0, 1, 2, 3].map((index) => (
-            <Grid item xs={6} key={index}>
+          {[0, 1, 2, 3].map((x) => (
+            <Grid item xs={6} key={x}>
               <Box sx={{ ...card_box, backgroundColor: background }}>
                 <FormControlLabel
-                  value={options[i[index]]}
+                  value={options[i[x]]}
                   control={<Radio />}
-                  label={options[i[index]]}
+                  label={options[i[x]]}
                   disabled={disabled}
-                  checked={checked === options[i[index]]}
+                  checked={checked === options[i[x]]}
                   onChange={() =>
-                    handleValueChange(options[i[index]])
+                    handleValueChange(options[i[x]])
                   }
                 />
               </Box>

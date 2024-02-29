@@ -23,15 +23,10 @@ const userSlice = createSlice({
     },
     clearUser: (state) => {
       state.user = null;
-      localStorage.removeItem("User")
       localStorage.removeItem("Token")
     },
     isLoading: (state) => {
       state.loading = true;
-    },
-    getUser:  (state) =>{
-      const user = localStorage.getItem("User");
-      state.user = JSON.parse(user!) as User | null;
     },
     setToken: (state, action) => {
       state.token = action.payload;
@@ -44,6 +39,6 @@ const userSlice = createSlice({
   },
 });
 
-export const { setUser, clearUser, isLoading, getUser, setToken, getToken } = userSlice.actions;
+export const { setUser, clearUser, isLoading, setToken, getToken } = userSlice.actions;
 
 export default userSlice.reducer;

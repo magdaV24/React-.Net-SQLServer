@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Github\\React-Entityframework-SQLServer\\server\\server.csproj": {}
+    "C:\\Users\\M\\OneDrive\\Documents\\GitHub\\React-.Net-SQLServer\\server\\server.csproj": {}
   },
   "projects": {
-    "C:\\Github\\React-Entityframework-SQLServer\\server\\server.csproj": {
+    "C:\\Users\\M\\OneDrive\\Documents\\GitHub\\React-.Net-SQLServer\\server\\server.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Github\\React-Entityframework-SQLServer\\server\\server.csproj",
+        "projectUniqueName": "C:\\Users\\M\\OneDrive\\Documents\\GitHub\\React-.Net-SQLServer\\server\\server.csproj",
         "projectName": "server",
-        "projectPath": "C:\\Github\\React-Entityframework-SQLServer\\server\\server.csproj",
+        "projectPath": "C:\\Users\\M\\OneDrive\\Documents\\GitHub\\React-.Net-SQLServer\\server\\server.csproj",
         "packagesPath": "C:\\Users\\M\\.nuget\\packages\\",
-        "outputPath": "C:\\Github\\React-Entityframework-SQLServer\\server\\obj\\",
+        "outputPath": "C:\\Users\\M\\OneDrive\\Documents\\GitHub\\React-.Net-SQLServer\\server\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

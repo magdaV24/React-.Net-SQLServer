@@ -55,8 +55,11 @@ namespace server.Utils
                 Subject = new ClaimsIdentity(new Claim[]
                 {
                 new Claim(ClaimTypes.Name, user.UserName),
-                new Claim(ClaimTypes.Email, user.Email)
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim("userID", user.Id),
+                new Claim("avatar", user.Avatar)
                 }),
+                
                 Expires = DateTime.UtcNow.AddHours(5),
                 Issuer = "http://localhost:5288/api",
                 Audience= "http://localhost:5288/api",

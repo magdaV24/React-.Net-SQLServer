@@ -24,7 +24,7 @@ export default function LoginForm() {
   const navigate = useNavigate();
   const link = (
     <Typography onClick={() => navigate("/dashboard")} sx={alert_typography}>
-      You logged in successfully! .Click here to go to the dashboard.
+      You logged in successfully! Click here to go to the dashboard.
     </Typography>
   ) as unknown as string | Element;
   const {
@@ -47,7 +47,6 @@ export default function LoginForm() {
       dispatch(setUser(currentUser));
       if(currentUser !== undefined){
       dispatch(setToken(res.data.token));
-      localStorage.setItem("User", JSON.stringify(currentUser))
       dispatch(setMessage(link));
       }
       if(isError){
